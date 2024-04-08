@@ -21,6 +21,8 @@ const researchAction: Action<any> = {
   },
 };
 
+// ...
+
 export async function POST(req: Request): Promise<Response> {
 
   const copilotKit = new CopilotBackend({
