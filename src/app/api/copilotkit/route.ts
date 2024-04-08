@@ -27,6 +27,7 @@ export async function POST(req: Request): Promise<Response> {
     actions: [ /* ... */ ],
     agents: [ /* ... */ ],
     // ...
+    
   });
 
   return copilotKit.response(req, new OpenAIAdapter());
