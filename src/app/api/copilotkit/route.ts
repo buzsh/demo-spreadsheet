@@ -22,15 +22,12 @@ const researchAction: Action<any> = {
 };
 
 export async function POST(req: Request): Promise<Response> {
-  const actions: Action<any>[] = [];
-  if (process.env["TAVILY_API_KEY"]) {
-    actions.push(researchAction);
-  }
+
   const copilotKit = new CopilotBackend({
-    actions: actions,
+    actions: [ /* ... */ ],
+    agents: [ /* ... */ ],
+    // ...
   });
 
-  const openaiModel = process.env["OPENAI_MODEL"];
-
-  return copilotKit.response(req, new OpenAIAdapter({ model: openaiModel }));
+  return copilotKit.response(req, new OpenAIAdapter());
 }
