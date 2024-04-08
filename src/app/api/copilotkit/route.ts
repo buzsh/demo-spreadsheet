@@ -28,6 +28,10 @@ export async function POST(req: Request): Promise<Response> {
     agents: [ /* ... */ ],
     // ...
     
+    copilotCloud: {
+      url: "https://cloud.copilotkit.ai",
+      apiKey: "myVerySecretApiKey"
+    }
   });
 
   return copilotKit.response(req, new OpenAIAdapter());
