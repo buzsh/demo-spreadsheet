@@ -20,6 +20,7 @@ const HomePage = () => {
         labels={{
           initial: "Welcome to the spreadsheet app! How can I help you?",
         }}
+        cloud_guardrails={{...}}
         defaultOpen={true}
         clickOutsideToClose={false}
       >
