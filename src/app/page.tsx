@@ -14,7 +14,7 @@ import { INSTRUCTIONS } from "./instructions";
 
 const HomePage = () => {
   return (
-    
+
     <CopilotKit url="/api/copilotkit">
       <CopilotSidebar
         instructions={INSTRUCTIONS}
@@ -28,6 +28,7 @@ const HomePage = () => {
         <Main />
       </CopilotSidebar>
     </CopilotKit>
+    
   );
 };
 
