@@ -1,7 +1,7 @@
 "use client";
 import "@copilotkit/react-ui/styles.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import SingleSpreadsheet from "./components/SingleSpreadsheet";
 import {
@@ -16,6 +16,12 @@ import { SpreadsheetData } from "./types";
 import { PreviewSpreadsheetChanges } from "./components/PreviewSpreadsheetChanges";
 
 const HomePage = () => {
+  useEffect(() => {
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      viewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
+    }
+  }, []);
   return (
     <CopilotKit
       //publicApiKey={process.env.NEXT_PUBLIC_COPILOT_CLOUD_API_KEY}
@@ -29,7 +35,7 @@ const HomePage = () => {
         labels={{
           initial: "Welcome to the spreadsheet app! How can I help you?",
         }}
-        defaultOpen={true}
+        defaultOpen={false}
         clickOutsideToClose={false}
       >
         <Main />
