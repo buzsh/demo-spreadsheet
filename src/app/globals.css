@@ -43,3 +43,15 @@ body {
 .copilotKitInput > textarea {
   font-size: 16px;
 }
+
+.copilotKitHeader {
+  background-color: rgb(0, 0, 0) !important;
+}
+
+.copilotKitUserMessage {
+  background-color: rgb(0, 0, 0) !important;
+}
+
+.copilotKitButton {
+  background-color: rgb(0, 0, 0) !important;
+}

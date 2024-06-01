@@ -1,15 +1,17 @@
 "use client";
 import "@copilotkit/react-ui/styles.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "./components/Sidebar";
 import SingleSpreadsheet from "./components/SingleSpreadsheet";
+import { nanoid } from "nanoid"; // Make sure to add this import
 import {
   CopilotKit,
   useCopilotAction,
   useCopilotReadable,
+  useCopilotChat,
 } from "@copilotkit/react-core";
-import { CopilotSidebar, InputProps } from "@copilotkit/react-ui";
+import { CopilotPopup, CopilotSidebar, InputProps } from "@copilotkit/react-ui";
 import { INSTRUCTIONS } from "./instructions";
 import { canonicalSpreadsheetData } from "./utils/canonicalSpreadsheetData";
 import { SpreadsheetData } from "./types";
@@ -68,36 +70,99 @@ const CustomInput: React.FC<InputProps> = ({ inProgress, onSend, isVisible }) =>
   );
 };
 
-
 const HomePage = () => {
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const showCopilotSidebar = () => {
+    setShowSidebar(true);
+  };
+
+  const hideCopilotSidebar = () => {
+    setShowSidebar(false);
+    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.copilotSidebarHidden) {
+      window.webkit.messageHandlers.copilotSidebarHidden.postMessage("Copilot sidebar is hidden");
+    } else {
+      console.warn("Message handler 'copilotSidebarHidden' is not available.");
+    }
+  };
+
+  const showCopilotPopup = () => {
+    setShowPopup(true);
+  };
+
+  const hideCopilotPopup = () => {
+    setShowPopup(false);
+    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.copilotPopupHidden) {
+      window.webkit.messageHandlers.copilotPopupHidden.postMessage("Copilot popup is hidden");
+    } else {
+      console.warn("Message handler 'copilotPopupHidden' is not available.");
+    }
+  };
+
+  useEffect(() => {
+    window.showCopilotSidebar = showCopilotSidebar;
+    window.hideCopilotSidebar = hideCopilotSidebar;
+    window.showCopilotPopup = showCopilotPopup;
+    window.hideCopilotPopup = hideCopilotPopup;
+  }, []);
+
   useEffect(() => {
     const viewport = document.querySelector("meta[name=viewport]");
     if (viewport) {
       viewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
     }
   }, []);
+
   return (
     <CopilotKit
       runtimeUrl="/api/copilotkit"
       transcribeAudioUrl="/api/transcribe"
       textToSpeechUrl="/api/tts"
     >
-      <CopilotSidebar
-        instructions={INSTRUCTIONS}
-        labels={{
-          initial: "Welcome to the spreadsheet app! How can I help you?",
-        }}
-        defaultOpen={false}
-        clickOutsideToClose={false}
-        /*Input={CustomInput}*/
-      />
+      {showPopup && (
+        <CopilotPopup
+          instructions={INSTRUCTIONS}
+          labels={{
+            initial: "Welcome to the spreadsheet app! How can I help you?",
+          }}
+          defaultOpen={true}
+          clickOutsideToClose={false}
+          showResponseButton={false}
+          Input={CustomInput}
+          onSetOpen={(open) => {
+            if (!open) {
+              hideCopilotPopup();
+            }
+          }}
+        />
+      )}
+
+      {showSidebar && (
+        <CopilotSidebar
+          instructions={INSTRUCTIONS}
+          labels={{
+            initial: "Welcome to the spreadsheet app! How can I help you?",
+          }}
+          defaultOpen={true}
+          clickOutsideToClose={false}
+          showResponseButton={false}
+          Input={CustomInput}
+          onSetOpen={(open) => {
+            if (!open) {
+              hideCopilotSidebar();
+            }
+          }}
+        />
+      )}
+
       <Main />
     </CopilotKit>
   );
 };
 
 const Main = () => {
-  const [spreadsheets, setSpreadsheets] = React.useState<SpreadsheetData[]>([
+  const [spreadsheets, setSpreadsheets] = useState<SpreadsheetData[]>([
     {
       title: "Spreadsheet 1",
       rows: [
@@ -110,9 +175,29 @@ const Main = () => {
 
   const [selectedSpreadsheetIndex, setSelectedSpreadsheetIndex] = useState(0);
 
+  const { append } = useCopilotChat({
+    id: "spreadsheetAppChat",
+  });
+
+  const sendMessageToCopilot = useCallback((message: string) => {
+    append({ id: nanoid(), content: message, role: "user" })
+      .then(() => {
+        console.log("Message processed by CopilotKit");
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.copilotMessageProcessed) {
+          window.webkit.messageHandlers.copilotMessageProcessed.postMessage("Message processed by CopilotKit");
+        } else {
+          console.warn("Message handler 'copilotMessageProcessed' is not available.");
+        }
+      });
+  }, [append]);
+
+  useEffect(() => {
+    window.sendMessageToCopilot = sendMessageToCopilot;
+  }, [sendMessageToCopilot]);
+
   useCopilotAction({
     name: "createSpreadsheet",
-    description: "Create a new  spreadsheet",
+    description: "Create a new spreadsheet",
     parameters: [
       {
         name: "rows",

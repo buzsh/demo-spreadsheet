@@ -140,7 +140,7 @@ const SingleSpreadsheet = ({ spreadsheet, setSpreadsheet }: MainAreaProps) => {
           }}
         />
         <button
-          className="bg-blue-500 text-white rounded-lg ml-6 w-8 h-8 mt-0.5"
+          className="bg-black text-white rounded-lg ml-6 w-8 h-8 mt-0.5"
           onClick={() => {
             // add an empty cell to each row
             const spreadsheetRows = [...spreadsheet.rows];
@@ -157,7 +157,7 @@ const SingleSpreadsheet = ({ spreadsheet, setSpreadsheet }: MainAreaProps) => {
         </button>
       </div>
       <button
-        className="bg-blue-500 text-white rounded-lg w-8 h-8 mt-5 "
+        className="bg-black text-white rounded-lg w-8 h-8 mt-5 "
         onClick={() => {
           const numberOfColumns = spreadsheet.rows[0].length;
           const newRow: SpreadsheetRow = [];
