@@ -107,12 +107,20 @@ const HomePage = () => {
     window.hideCopilotPopup = hideCopilotPopup;
   }, []);
 
-  useEffect(() => {
-    const viewport = document.querySelector("meta[name=viewport]");
-    if (viewport) {
-      viewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
-    }
+  const replaceTitles = useCallback(() => {
+    const titles = document.querySelectorAll("div.copilotKitHeader > div");
+    titles.forEach((title) => {
+      if (title.textContent === "CopilotKit") {
+        title.textContent = "Vessium";
+      }
+    });
   }, []);
+
+  useEffect(() => {
+    if (showPopup || showSidebar) {
+      replaceTitles();
+    }
+  }, [showPopup, showSidebar, replaceTitles]);
 
   return (
     <CopilotKit
