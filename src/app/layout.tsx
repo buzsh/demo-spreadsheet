@@ -15,14 +15,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    const viewport = document.querySelector("meta[name=viewport]");
+    if (viewport) {
+      viewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
+    }
+  }, []);
+  
   return (
-    useEffect(() => {
-      const viewport = document.querySelector("meta[name=viewport]");
-      if (viewport) {
-        viewport.setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
-      }
-    }, []);
-
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
