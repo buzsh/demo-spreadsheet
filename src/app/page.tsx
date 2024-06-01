@@ -9,11 +9,65 @@ import {
   useCopilotAction,
   useCopilotReadable,
 } from "@copilotkit/react-core";
-import { CopilotSidebar } from "@copilotkit/react-ui";
+import { CopilotSidebar, InputProps } from "@copilotkit/react-ui";
 import { INSTRUCTIONS } from "./instructions";
 import { canonicalSpreadsheetData } from "./utils/canonicalSpreadsheetData";
 import { SpreadsheetData } from "./types";
 import { PreviewSpreadsheetChanges } from "./components/PreviewSpreadsheetChanges";
+
+declare global {
+  interface Window {
+    webkit: {
+      messageHandlers: {
+        copilotMessageProcessed: {
+          postMessage: (message: string) => void;
+        };
+        copilotSidebarHidden: {
+          postMessage: (message: string) => void;
+        };
+        copilotPopupHidden: {
+          postMessage: (message: string) => void;
+        };
+      };
+    };
+    sendMessageToCopilot: (message: string) => void;
+    showCopilotSidebar: () => void;
+    hideCopilotSidebar: () => void;
+    showCopilotPopup: () => void;
+    hideCopilotPopup: () => void;
+  }
+}
+
+const CustomInput: React.FC<InputProps> = ({ inProgress, onSend, isVisible }) => {
+  const [value, setValue] = useState("");
+
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <textarea
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          onSend(value);
+          setValue("");
+        }
+      }}
+      style={{
+        maxHeight: "4em",
+        overflow: "auto",
+        width: "100%",
+        boxSizing: "border-box",
+      }}
+      rows={1}
+      disabled={inProgress}
+    />
+  );
+};
+
 
 const HomePage = () => {
   useEffect(() => {
@@ -24,8 +78,6 @@ const HomePage = () => {
   }, []);
   return (
     <CopilotKit
-      //publicApiKey={process.env.NEXT_PUBLIC_COPILOT_CLOUD_API_KEY}
-      // Alternatively, you can use runtimeUrl to host your own CopilotKit Runtime
       runtimeUrl="/api/copilotkit"
       transcribeAudioUrl="/api/transcribe"
       textToSpeechUrl="/api/tts"
@@ -37,9 +89,9 @@ const HomePage = () => {
         }}
         defaultOpen={false}
         clickOutsideToClose={false}
-      >
-        <Main />
-      </CopilotSidebar>
+        /*Input={CustomInput}*/
+      />
+      <Main />
     </CopilotKit>
   );
 };
