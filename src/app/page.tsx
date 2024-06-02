@@ -30,6 +30,9 @@ declare global {
         copilotPopupHidden: {
           postMessage: (message: string) => void;
         };
+        insertedItem: {
+          postMessage: (message: string) => void;
+        };
       };
     };
     sendMessageToCopilot: (message: string) => void;
@@ -114,6 +117,7 @@ const HomePage = () => {
     }
   }, []);
 
+  // Function to replace titles
   const replaceTitles = useCallback(() => {
     const titles = document.querySelectorAll("div.copilotKitHeader > div");
     titles.forEach((title) => {
@@ -171,12 +175,12 @@ const HomePage = () => {
         />
       )}
 
-      <Main />
+      <Main replaceTitles={replaceTitles} />
     </CopilotKit>
   );
 };
 
-const Main = () => {
+const Main: React.FC<{ replaceTitles: () => void }> = ({ replaceTitles }) => {
   const [spreadsheets, setSpreadsheets] = useState<SpreadsheetData[]>([
     {
       title: "Spreadsheet 1",
@@ -209,6 +213,10 @@ const Main = () => {
   useEffect(() => {
     window.sendMessageToCopilot = sendMessageToCopilot;
   }, [sendMessageToCopilot]);
+
+  useEffect(() => {
+    replaceTitles();
+  }, [replaceTitles]);
 
   useCopilotAction({
     name: "createSpreadsheet",
@@ -286,6 +294,11 @@ const Main = () => {
             console.log("setSpreadsheet", spreadsheet);
             const newSpreadsheets = [...prev];
             newSpreadsheets[selectedSpreadsheetIndex] = spreadsheet;
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.insertedItem) {
+              window.webkit.messageHandlers.insertedItem.postMessage(JSON.stringify(spreadsheet));
+            } else {
+              console.warn("Message handler 'insertedItem' is not available.");
+            }
             return newSpreadsheets;
           });
         }}
