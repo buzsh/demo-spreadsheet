@@ -90,21 +90,6 @@ const HomePage = () => {
     }
   }, []);
 
-  const replaceTitles = useCallback(() => {
-    const titles = document.querySelectorAll("div.copilotKitHeader > div");
-    titles.forEach((title) => {
-      if (title.textContent === "CopilotKit") {
-        title.textContent = "Vessium";
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (showPopup || showSidebar) {
-      replaceTitles();
-    }
-  }, [showPopup, showSidebar, replaceTitles]);
-
   return (
     <CopilotKit
       runtimeUrl="/api/copilotkit"
@@ -115,7 +100,8 @@ const HomePage = () => {
         <CopilotPopup
           instructions={INSTRUCTIONS}
           labels={{
-            initial: "Welcome to the spreadsheet app! How can I help you?",
+            title: "Vessium",
+            initial: "Hi there! 👋 I can help you organize your data.",
           }}
           defaultOpen={true}
           clickOutsideToClose={false}
@@ -134,7 +120,8 @@ const HomePage = () => {
         <CopilotSidebar
           instructions={INSTRUCTIONS}
           labels={{
-            initial: "Welcome to the spreadsheet app! How can I help you?",
+            title: "Vessium",
+            initial: "Hi there! 👋 I can help you organize your data.",
           }}
           defaultOpen={true}
           clickOutsideToClose={false}
@@ -149,12 +136,12 @@ const HomePage = () => {
         />
       )}
 
-      <Main replaceTitles={replaceTitles} />
+      <Main />
     </CopilotKit>
   );
 };
 
-const Main: React.FC<{ replaceTitles: () => void }> = ({ replaceTitles }) => {
+const Main: React.FC = () => {
   const [spreadsheets, setSpreadsheets] = useState<SpreadsheetData[]>([
     {
       title: "Spreadsheet 1",
@@ -187,10 +174,6 @@ const Main: React.FC<{ replaceTitles: () => void }> = ({ replaceTitles }) => {
   useEffect(() => {
     window.sendMessageToCopilot = sendMessageToCopilot;
   }, [sendMessageToCopilot]);
-
-  useEffect(() => {
-    replaceTitles();
-  }, [replaceTitles]);
 
   useCopilotAction({
     name: "createSpreadsheet",
