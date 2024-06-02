@@ -43,35 +43,8 @@ declare global {
   }
 }
 
-const CustomInput: React.FC<InputProps> = ({ inProgress, onSend, isVisible }) => {
-  const [value, setValue] = useState("");
-
-  if (!isVisible) {
-    return null;
-  }
-
-  return (
-    <textarea
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          onSend(value);
-          setValue("");
-        }
-      }}
-      style={{
-        maxHeight: "4em",
-        overflow: "auto",
-        width: "100%",
-        boxSizing: "border-box",
-      }}
-      rows={1}
-      disabled={inProgress}
-    />
-  );
-};
+const EmptyInput: React.FC = () => null;
+const EmptyButton: React.FC = () => null;
 
 const HomePage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -117,7 +90,6 @@ const HomePage = () => {
     }
   }, []);
 
-  // Function to replace titles
   const replaceTitles = useCallback(() => {
     const titles = document.querySelectorAll("div.copilotKitHeader > div");
     titles.forEach((title) => {
@@ -148,12 +120,13 @@ const HomePage = () => {
           defaultOpen={true}
           clickOutsideToClose={false}
           showResponseButton={false}
-          Input={CustomInput}
           onSetOpen={(open) => {
             if (!open) {
               hideCopilotPopup();
             }
           }}
+          Button={EmptyButton}
+          Input={EmptyInput}
         />
       )}
 
@@ -166,12 +139,13 @@ const HomePage = () => {
           defaultOpen={true}
           clickOutsideToClose={false}
           showResponseButton={false}
-          Input={CustomInput}
           onSetOpen={(open) => {
             if (!open) {
               hideCopilotSidebar();
             }
           }}
+          Button={EmptyButton}
+          Input={EmptyInput}
         />
       )}
 
